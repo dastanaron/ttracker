@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	guiController "gui-mini-ttracker/gui-controller"
 	"gui-mini-ttracker/helpers"
+	timer "gui-mini-ttracker/library/timer"
 	"log"
 
 	"github.com/gotk3/gotk3/gdk"
@@ -46,5 +47,25 @@ func main() {
 
 	controllerGUI.Common.MainWindow.ShowAll()
 
+	t := timer.New()
+
+	isStart := true
+
+	controllerGUI.Common.StartButton.Connect("clicked", func() {
+		if isStart {
+			t.Start()
+			go handleTimer(t, *controllerGUI)
+		} else {
+			t.Stop()
+		}
+		isStart = !isStart
+	})
+
 	gtk.Main()
+}
+
+func handleTimer(t timer.Timer, gui guiController.GUIInterface) {
+	for seconds := range t.Seconds {
+		gui.Common.Timer.SetText(helpers.ConvertSecondsToHumanTime(seconds))
+	}
 }

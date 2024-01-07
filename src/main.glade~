@@ -39,7 +39,7 @@
       </object>
     </child>
   </object>
-  <object class="GtkImage" id="start_button_image">
+  <object class="GtkImage" id="start_button">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="stock">gtk-media-play</property>
@@ -68,11 +68,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="start_button">
+          <object class="GtkButton">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="image">start_button_image</property>
+            <property name="image">start_button</property>
           </object>
           <packing>
             <property name="left-attach">1</property>

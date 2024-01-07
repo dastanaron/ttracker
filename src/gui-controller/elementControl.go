@@ -5,7 +5,10 @@ import (
 )
 
 type GUICommonWindow struct {
-	MainWindow *gtk.Window
+	MainWindow    *gtk.Window
+	StartButton   *gtk.Button
+	TaskNameField *gtk.Entry
+	Timer         *gtk.Label
 }
 
 type GUIErrorDialog struct {
@@ -29,6 +32,26 @@ func NewGUIController(gtkBuilder *gtk.Builder) (*GUIInterface, error) {
 	}
 
 	commonWindow.MainWindow = obj.(*gtk.Window)
+
+	obj, err = gtkBuilder.GetObject("start_button")
+	if err != nil {
+		return nil, err
+	}
+
+	commonWindow.StartButton = obj.(*gtk.Button)
+
+	obj, err = gtkBuilder.GetObject("task_name_field")
+	if err != nil {
+		return nil, err
+	}
+
+	commonWindow.TaskNameField = obj.(*gtk.Entry)
+
+	obj, err = gtkBuilder.GetObject("current_time_label")
+	if err != nil {
+		return nil, err
+	}
+	commonWindow.Timer = obj.(*gtk.Label)
 
 	obj, err = gtkBuilder.GetObject("error_dialog")
 	if err != nil {
