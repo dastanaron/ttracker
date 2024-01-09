@@ -28,12 +28,13 @@ func GetConnection() *sql.DB {
 }
 
 func checkTable() {
-	sql := `CREATE TABLE IF NOT EXISTS "tasks" (
+	sql := `CREATE TABLE "tasks" (
 		"id"	INTEGER NOT NULL,
 		"name"	TEXT,
 		"startTime"	INTEGER,
 		"duration"	INTEGER,
 		"project"	TEXT,
+		"endTime"	INTEGER,
 		PRIMARY KEY("id" AUTOINCREMENT)
 	);`
 

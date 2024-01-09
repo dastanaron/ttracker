@@ -16,7 +16,7 @@ type TaskModel struct {
 func AddRow(model TaskModel) {
 	db := GetConnection()
 
-	_, err := db.Exec("INSERT INTO tasks (name, startTime, duration, project) VALUES (?, ?, ?, ?)", model.Name, model.StartTime.Unix(), model.Duration, model.Project)
+	_, err := db.Exec("INSERT INTO tasks (name, startTime, endTime, duration, project) VALUES (?, ?, ?, ?, ?)", model.Name, model.StartTime.Unix(), time.Now().Unix(), model.Duration, model.Project)
 	helpers.CheckError("Error record data to database", err)
 }
 
@@ -30,7 +30,7 @@ func Save(model TaskModel) {
 
 	if foundModel.Id != 0 {
 		model.Duration = foundModel.Duration + model.Duration
-		_, err := db.Exec("UPDATE tasks SET duration = ? WHERE id = ?", model.Duration, foundModel.Id)
+		_, err := db.Exec("UPDATE tasks SET duration = ?, endTime = ? WHERE id = ?", model.Duration, time.Now().Unix(), foundModel.Id)
 		helpers.CheckError("Error update data in database", err)
 	} else {
 		AddRow(model)
@@ -70,7 +70,7 @@ func GetToDay() []TaskModel {
 
 	result := []TaskModel{}
 
-	rows, err := db.Query("select id, name, startTime, duration, project from tasks where startTime >= ?", bod.Unix())
+	rows, err := db.Query("select id, name, startTime, duration, project from tasks where endTime >= ?", bod.Unix())
 	helpers.CheckError("Error receive data from database", err)
 
 	for rows.Next() {
