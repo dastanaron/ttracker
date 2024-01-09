@@ -5,6 +5,7 @@ import (
 	guiController "gui-mini-ttracker/gui-controller"
 	"log"
 	"math"
+	"time"
 )
 
 func CheckError(message string, err error) {
@@ -51,4 +52,9 @@ func ConvertSecondsToHumanTime(seconds int) string {
 	}
 
 	return fmt.Sprintf("%s:%s:%s", formedHours, formedMinutes, formedSeconds)
+}
+
+func Bod(t time.Time) time.Time {
+	year, month, day := t.Date()
+	return time.Date(year, month, day, 0, 0, 0, 0, t.Location())
 }

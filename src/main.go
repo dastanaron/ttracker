@@ -3,6 +3,7 @@ package main
 import (
 	_ "embed"
 	"errors"
+	"gui-mini-ttracker/core/database"
 	guiController "gui-mini-ttracker/gui-controller"
 	"gui-mini-ttracker/helpers"
 	timer "gui-mini-ttracker/library/timer"
@@ -18,6 +19,8 @@ var gladeInterface string
 
 //go:embed icon.png
 var icon []byte
+
+var isRunnedTimer bool
 
 type Task struct {
 	StartTime time.Time
@@ -59,9 +62,9 @@ func main() {
 
 	t := timer.New()
 
-	isStart := true
+	isRunnedTimer = false
 	timerStop := make(chan int)
-	currentRow := 0
+	currentRow := checkRecentData(*controllerGUI)
 
 	controllerGUI.Common.StartButton.Connect("clicked", func() {
 		text, err := controllerGUI.Common.TaskNameField.GetText()
@@ -73,7 +76,7 @@ func main() {
 			return
 		}
 
-		if isStart {
+		if !isRunnedTimer {
 			t.Start()
 			go handleTimer(&t, controllerGUI, timerStop)
 			controllerGUI.Common.StartButtonImage.SetFromIconName("media-playback-stop", gtk.ICON_SIZE_BUTTON)
@@ -82,23 +85,19 @@ func main() {
 			timerStop <- -1
 			controllerGUI.Common.StartButtonImage.SetFromIconName("media-playback-start", gtk.ICON_SIZE_BUTTON)
 
-			taskName, _ := gtk.LabelNew(text)
+			addTaskToGrid(*controllerGUI, text, t.Duration, currentRow)
 
-			taskDuration, _ := gtk.LabelNew(helpers.ConvertSecondsToHumanTime(t.Duration))
-			taskDuration.SetHAlign(gtk.ALIGN_CENTER)
-
-			button, _ := gtk.ButtonNewFromIconName("gtk-delete", gtk.ICON_SIZE_BUTTON)
-
-			controllerGUI.Common.TasksGrid.Attach(taskName.ToWidget(), 0, currentRow, 1, 1)
-			controllerGUI.Common.TasksGrid.Attach(taskDuration.ToWidget(), 1, currentRow, 1, 1)
-			controllerGUI.Common.TasksGrid.Attach(button.ToWidget(), 3, currentRow, 1, 1)
-
-			controllerGUI.Common.MainWindow.ShowAll()
+			database.Save(database.TaskModel{
+				Name:      text,
+				StartTime: t.StartTime,
+				Duration:  t.Duration,
+				Project:   "",
+			})
 
 			t.Clear()
 			currentRow++
 		}
-		isStart = !isStart
+		isRunnedTimer = !isRunnedTimer
 	})
 
 	gtk.Main()
@@ -115,4 +114,39 @@ func handleTimer(t *timer.Timer, gui *guiController.GUIInterface, done chan int)
 			gui.Common.Timer.SetText(helpers.ConvertSecondsToHumanTime(duration))
 		}
 	}
+}
+
+func addTaskToGrid(gui guiController.GUIInterface, name string, duration int, row int) {
+	taskName, _ := gtk.LabelNew(name)
+
+	taskDuration, _ := gtk.LabelNew(helpers.ConvertSecondsToHumanTime(duration))
+	taskDuration.SetHAlign(gtk.ALIGN_CENTER)
+
+	button, _ := gtk.ButtonNewFromIconName("gtk-media-play", gtk.ICON_SIZE_BUTTON)
+
+	gui.Common.TasksGrid.Attach(taskName.ToWidget(), 0, row, 1, 1)
+	gui.Common.TasksGrid.Attach(taskDuration.ToWidget(), 1, row, 1, 1)
+	gui.Common.TasksGrid.Attach(button.ToWidget(), 3, row, 1, 1)
+	gui.Common.MainWindow.ShowAll()
+
+	button.Connect("clicked", func() {
+		if isRunnedTimer {
+			gui.Common.StartButton.Clicked()
+		}
+		gui.Common.TaskNameField.SetText(name)
+		gui.Common.StartButton.Clicked()
+	})
+}
+
+func checkRecentData(gui guiController.GUIInterface) int {
+	currentRow := 0
+
+	models := database.GetToDay()
+
+	for _, model := range models {
+		addTaskToGrid(gui, model.Name, model.Duration, currentRow)
+		currentRow++
+	}
+
+	return currentRow
 }

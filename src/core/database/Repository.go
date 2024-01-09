@@ -1,0 +1,92 @@
+package database
+
+import (
+	"gui-mini-ttracker/helpers"
+	"time"
+)
+
+type TaskModel struct {
+	Id        int
+	Name      string
+	StartTime time.Time
+	Duration  int
+	Project   string
+}
+
+func AddRow(model TaskModel) {
+	db := GetConnection()
+
+	_, err := db.Exec("INSERT INTO tasks (name, startTime, duration, project) VALUES (?, ?, ?, ?)", model.Name, model.StartTime.Unix(), model.Duration, model.Project)
+	helpers.CheckError("Error record data to database", err)
+}
+
+func Save(model TaskModel) {
+	db := GetConnection()
+
+	var foundModel TaskModel
+
+	row := db.QueryRow("select id, duration from tasks where name = ?", model.Name)
+	row.Scan(&foundModel.Id, &foundModel.Duration)
+
+	if foundModel.Id != 0 {
+		model.Duration = foundModel.Duration + model.Duration
+		_, err := db.Exec("UPDATE tasks SET duration = ? WHERE id = ?", model.Duration, foundModel.Id)
+		helpers.CheckError("Error update data in database", err)
+	} else {
+		AddRow(model)
+	}
+}
+
+func GetLatest(count int) []TaskModel {
+	db := GetConnection()
+
+	result := []TaskModel{}
+
+	rows, err := db.Query("select id, name, startTime, duration, project from tasks order by startTime desc limit ?", count)
+	helpers.CheckError("Error receive data from database", err)
+
+	for rows.Next() {
+		var row TaskModel
+		var startTimeUnix int
+		err = rows.Scan(&row.Id, &row.Name, &startTimeUnix, &row.Duration, &row.Project)
+		if err != nil {
+			helpers.CheckError("Error transform data from database to TaskModel", err)
+		}
+
+		row.StartTime = time.Unix(int64(startTimeUnix), 0)
+
+		result = append(result, row)
+	}
+
+	rows.Close()
+
+	return result
+}
+
+func GetToDay() []TaskModel {
+	db := GetConnection()
+
+	bod := helpers.Bod(time.Now())
+
+	result := []TaskModel{}
+
+	rows, err := db.Query("select id, name, startTime, duration, project from tasks where startTime >= ?", bod.Unix())
+	helpers.CheckError("Error receive data from database", err)
+
+	for rows.Next() {
+		var row TaskModel
+		var startTimeUnix int
+		err = rows.Scan(&row.Id, &row.Name, &startTimeUnix, &row.Duration, &row.Project)
+		if err != nil {
+			helpers.CheckError("Error transform data from database to TaskModel", err)
+		}
+
+		row.StartTime = time.Unix(int64(startTimeUnix), 0)
+
+		result = append(result, row)
+	}
+
+	rows.Close()
+
+	return result
+}
