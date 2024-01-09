@@ -11,6 +11,7 @@ type GUICommonWindow struct {
 	TaskNameField    *gtk.Entry
 	Timer            *gtk.Label
 	TasksGrid        *gtk.Grid
+	Total            *gtk.Label
 }
 
 type GUIErrorDialog struct {
@@ -67,6 +68,12 @@ func NewGUIController(gtkBuilder *gtk.Builder) (*GUIInterface, error) {
 		return nil, err
 	}
 	commonWindow.TasksGrid = obj.(*gtk.Grid)
+
+	obj, err = gtkBuilder.GetObject("total_time")
+	if err != nil {
+		return nil, err
+	}
+	commonWindow.Total = obj.(*gtk.Label)
 
 	obj, err = gtkBuilder.GetObject("error_dialog")
 	if err != nil {

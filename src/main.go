@@ -85,17 +85,17 @@ func main() {
 			timerStop <- -1
 			controllerGUI.Common.StartButtonImage.SetFromIconName("media-playback-start", gtk.ICON_SIZE_BUTTON)
 
-			addTaskToGrid(*controllerGUI, text, t.Duration, currentRow)
-
 			database.Save(database.TaskModel{
 				Name:      text,
 				StartTime: t.StartTime,
 				Duration:  t.Duration,
-				Project:   "",
+				Project:   getProjectInitials(text, 2),
 			})
 
 			t.Clear()
-			currentRow++
+
+			truncateGrid(*controllerGUI, currentRow)
+			currentRow = checkRecentData(*controllerGUI)
 		}
 		isRunnedTimer = !isRunnedTimer
 	})
@@ -143,10 +143,29 @@ func checkRecentData(gui guiController.GUIInterface) int {
 
 	models := database.GetToDay()
 
+	sumDuration := 0
+
 	for _, model := range models {
 		addTaskToGrid(gui, model.Name, model.Duration, currentRow)
+		sumDuration += model.Duration
 		currentRow++
 	}
 
+	gui.Common.Total.SetText(helpers.ConvertSecondsToHumanTime(sumDuration))
+
 	return currentRow
+}
+
+func truncateGrid(gui guiController.GUIInterface, currentRow int) {
+	for i := currentRow; i >= 0; i-- {
+		gui.Common.TasksGrid.RemoveRow(i)
+	}
+}
+
+func getProjectInitials(name string, symbolsCount int) string {
+	runes := []rune(name)
+	if len(runes) > symbolsCount {
+		return string(runes[:symbolsCount])
+	}
+	return name
 }
