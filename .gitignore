@@ -1,3 +1,4 @@
 data
 build
 src/data.db
+**/*.glade~
