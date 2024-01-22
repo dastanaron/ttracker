@@ -21,7 +21,12 @@ func IncrementDuration(duration int) {
 
 	if rawData.Data != "" {
 		json.Unmarshal([]byte(rawData.Data), &model)
-		model.Duration += duration
+
+		if isToday(model.LatestTimeStamp) {
+			model.Duration += duration
+		} else {
+			model.Duration = duration
+		}
 	}
 
 	model.LatestTimeStamp = time.Now().Unix()
