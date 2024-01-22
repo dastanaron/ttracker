@@ -15,7 +15,7 @@ type TaskModel struct {
 
 type ServiceData struct {
 	Name string
-	data string
+	Data string
 }
 
 func AddRow(model TaskModel) {
@@ -105,7 +105,7 @@ func SaveServiceData(name, data string) {
 	row.Scan(&foundModel.Name)
 
 	if foundModel.Name != "" {
-		_, err := db.Exec("UPDATE service_data SET data = ? WHERE id = ?", data, foundModel.Name)
+		_, err := db.Exec("UPDATE service_data SET data = ? WHERE name = ?", data, foundModel.Name)
 		helpers.CheckError("Error update data in database", err)
 	} else {
 		_, err := db.Exec("INSERT INTO service_data (name, data) VALUES (?, ?)", name, data)
@@ -119,7 +119,7 @@ func GetServiceData(key string) ServiceData {
 	var foundModel ServiceData
 
 	row := db.QueryRow("select name, data from service_data where name = ?", key)
-	row.Scan(&foundModel.Name, &foundModel.data)
+	row.Scan(&foundModel.Name, &foundModel.Data)
 
 	return foundModel
 }

@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"errors"
 	"gui-mini-ttracker/core/database"
+	todayduration "gui-mini-ttracker/core/database/todayDuration"
 	guiController "gui-mini-ttracker/gui-controller"
 	"gui-mini-ttracker/helpers"
 	timer "gui-mini-ttracker/library/timer"
@@ -92,6 +93,8 @@ func main() {
 				Project:   getProjectInitials(text, 2),
 			})
 
+			todayduration.IncrementDuration(t.Duration)
+
 			t.Clear()
 
 			truncateGrid(*controllerGUI, currentRow)
@@ -143,15 +146,12 @@ func checkRecentData(gui guiController.GUIInterface) int {
 
 	models := database.GetToDay()
 
-	sumDuration := 0
-
 	for _, model := range models {
 		addTaskToGrid(gui, model.Name, model.Duration, currentRow)
-		sumDuration += model.Duration
 		currentRow++
 	}
 
-	gui.Common.Total.SetText(helpers.ConvertSecondsToHumanTime(sumDuration))
+	gui.Common.Total.SetText(helpers.ConvertSecondsToHumanTime(todayduration.GetToDayDuration()))
 
 	return currentRow
 }
