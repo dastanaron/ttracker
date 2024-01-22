@@ -21,14 +21,19 @@ func GetConnection() *sql.DB {
 	if connect == nil {
 		connect, err = sql.Open("sqlite3", fmt.Sprintf("%s/data.db", cwd))
 		helpers.CheckError("Error database connection", err)
-		checkTable()
+		checkTables()
 	}
 
 	return connect
 }
 
-func checkTable() {
-	sql := `CREATE TABLE "tasks" (
+func checkTables() {
+	createTaskTable()
+	createServiceDataTable()
+}
+
+func createTaskTable() {
+	sql := `CREATE TABLE IF NOT EXISTS "tasks" (
 		"id"	INTEGER NOT NULL,
 		"name"	TEXT,
 		"startTime"	INTEGER,
@@ -36,6 +41,16 @@ func checkTable() {
 		"project"	TEXT,
 		"endTime"	INTEGER,
 		PRIMARY KEY("id" AUTOINCREMENT)
+	);`
+
+	GetConnection().Exec(sql)
+}
+
+func createServiceDataTable() {
+	sql := `CREATE TABLE IF NOT EXISTS "service_data" (
+		"name" TEXT NOT NULL UNIQUE,
+		"data" TEXT NOT NULL,
+		PRIMARY KEY("name")
 	);`
 
 	GetConnection().Exec(sql)

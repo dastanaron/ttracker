@@ -13,6 +13,11 @@ type TaskModel struct {
 	Project   string
 }
 
+type ServiceData struct {
+	Name string
+	data string
+}
+
 func AddRow(model TaskModel) {
 	db := GetConnection()
 
@@ -89,4 +94,32 @@ func GetToDay() []TaskModel {
 	rows.Close()
 
 	return result
+}
+
+func SaveServiceData(name, data string) {
+	db := GetConnection()
+
+	var foundModel ServiceData
+
+	row := db.QueryRow("select name from service_data where name = ?", name)
+	row.Scan(&foundModel.Name)
+
+	if foundModel.Name != "" {
+		_, err := db.Exec("UPDATE service_data SET data = ? WHERE id = ?", data, foundModel.Name)
+		helpers.CheckError("Error update data in database", err)
+	} else {
+		_, err := db.Exec("INSERT INTO service_data (name, data) VALUES (?, ?)", name, data)
+		helpers.CheckError("Error record data to database", err)
+	}
+}
+
+func GetServiceData(key string) ServiceData {
+	db := GetConnection()
+
+	var foundModel ServiceData
+
+	row := db.QueryRow("select name, data from service_data where name = ?", key)
+	row.Scan(&foundModel.Name, &foundModel.data)
+
+	return foundModel
 }
