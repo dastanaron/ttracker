@@ -1,6 +1,6 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "wails-project",
+  "name": "ttracker",
   "outputfilename": "wails-project",
   "frontend:install": "npm install",
   "frontend:build": "npm run build",

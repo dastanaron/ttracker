@@ -29,8 +29,13 @@ func (a *App) Log(value string) {
 
 func (a *App) SaveTask(model database.TaskModel) {
 	database.Save(model)
+	database.IncrementDuration(model.Duration)
 }
 
 func (a *App) GetTodayTask() []database.TaskModel {
 	return database.GetToDay()
+}
+
+func (a *App) GetTodayDuration() int {
+	return database.GetToDayDuration()
 }

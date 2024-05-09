@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { convertSecondsToHumanTime } from './libraries/timer';
 import { TaskModel } from './models/TaskModel';
-import { GetTodayTask, Log, SaveTask } from '../wailsjs/go/main/App';
+import { GetTodayDuration, GetTodayTask, Log, SaveTask } from '../wailsjs/go/main/App';
 
 const DEFAULT_TASK_MODEL: TaskModel = {
   Id:        0,
@@ -20,6 +20,8 @@ function App() {
   const [intervalId, setIntervalId] = useState<number>();
   const [tasks, setTasks] = useState<TaskModel[]>([]);
   const [taskModel, setTaskModel] = useState<TaskModel>(DEFAULT_TASK_MODEL);
+
+  const [todayDuration, setTodayDuration] = useState(0);
 
   const [requestCount, setRequestCount] = useState(1);
 
@@ -65,10 +67,13 @@ function App() {
     GetTodayTask().then(res => {
       setTasks(res);
     }); 
+    GetTodayDuration().then(res => {
+      setTodayDuration(res);
+    });
   }, [requestCount]);
 
   return (
-    <div id="App">
+    <div id="app">
       <div className="row">
         <div className='col'>
           <input
@@ -84,7 +89,7 @@ function App() {
             }} /> 
         </div>
         <div className='col'>
-          <button type='button' className='start-btn' onClick={isRunTimer ? stopTimer : startTimer}>{isRunTimer ? 'Stop' : 'Start'}</button>
+          <button type='button' className='start-btn' onClick={isRunTimer ? stopTimer : startTimer}>{isRunTimer ? '⏹️' : '▶️'}</button>
         </div>
       </div>
       <div className='timer'>
@@ -105,18 +110,26 @@ function App() {
                 <tr>
                   <td>{task.Name}</td>
                   <td>{convertSecondsToHumanTime(task.Duration)}</td>
-                  <td><button type='button' className='start-btn' onClick={async () => {
+                  <td className='control'><button type='button' className='start-btn' onClick={async () => {
                     setTaskName(task.Name);
                     setTaskModel(task);
                     if (isRunTimer) {
                       await stopTimer();
                     }
                     startTimer();
-                  }}>Start</button></td>
+                  }}>▶️</button></td>
                 </tr>
               ))
             }
-
+            <tr>
+              <td>
+                Total today:
+              </td>
+              <td>
+                {convertSecondsToHumanTime(todayDuration)}
+              </td>
+              <td></td>
+            </tr>
           </tbody>
         </table>
       </div>

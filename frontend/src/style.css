@@ -18,33 +18,3 @@ body {
     src: local(""),
     url("assets/fonts/roboto-regular.woff2") format("woff2");
 }
-
-#app {
-    height: 100vh;
-}
-
-.timer {
-  margin: 1rem auto;
-  width: 100%;
-  text-align: center;
-  font-size: 1.5rem;
-}
-.report {
-  overflow-y: scroll;
-}
-
-table.report-time {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table.report-time thead tr td {
-  text-align: center;
-  font-weight: bold;
-}
-table.report-time tr td {
-  border: 1px solid #fff;
-  padding: 0.2rem;
-}
-
-
