@@ -1,0 +1,32 @@
+#app {
+    height: 100vh;
+}
+
+.task-name-input {
+    padding: 7px 10px 7px 10px;
+    border-radius: 0;
+    outline: none;
+    border: none;
+    width: 100%;
+}
+
+.start-btn {
+    padding: 7px 24px;
+    border-radius: 0;
+    outline: none;
+    border: 1px solid #000;
+  background-color: #fff;
+}
+
+.start-btn:hover {
+  background-color: #cecece;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}

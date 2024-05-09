@@ -1,0 +1,71 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/electron",
+    "plugin:import/typescript"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          ["sibling", "parent"],
+          "index",
+          "unknown"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-explicit-any": 0,
+    "import/no-named-as-default": 0,
+    "@typescript-eslint/no-unused-vars": ["error"],
+    "semi":                              [2, "always"],
+    "quotes":                            [2, "single", "avoid-escape"],
+    "indent":                            [1, 2, {
+      "ImportDeclaration": "first"
+    }],
+    "object-curly-spacing": [2, "always", {
+      "objectsInObjects": false
+    }],
+    "key-spacing": [2, {
+      "align": "value"
+    }],
+    "no-useless-escape": 0,
+    "react-hooks/exhaustive-deps":               0,
+    "@typescript-eslint/member-delimiter-style": ["warn", {
+      "multiline": {
+        "delimiter":   "comma",
+        "requireLast": true
+      },
+      "singleline": {
+        "delimiter":   "comma",
+        "requireLast": true
+      },
+      "overrides": {
+        "interface": {
+          "multiline": {
+            "delimiter":   "semi",
+            "requireLast": true
+          }
+        }
+      }
+    }]
+  }
+}
