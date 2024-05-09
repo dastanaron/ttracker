@@ -1,0 +1,61 @@
+#app {
+  height: 100vh;
+  margin-top: 1rem;
+}
+
+.task-name-input {
+    padding: 7px 10px 7px 10px;
+    border-radius: 0;
+    outline: none;
+    border: none;
+    width: 100%;
+}
+
+.start-btn {
+outline: none;
+padding: 0;
+margin: 0;
+border: 0;
+font-size: 1.5rem;
+}
+
+.start-btn:hover {
+  background-color: #cecece;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.timer {
+  margin: 1rem auto;
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+}
+.report {
+  overflow-y: scroll;
+}
+
+table.report-time {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.report-time thead tr td {
+  text-align: center;
+  font-weight: bold;
+}
+table.report-time tr td {
+  border: 1px solid #fff;
+  padding: 0.5rem;
+}
+
+table.report-time tr td.control {
+  text-align: center;
+}

@@ -1,4 +1,3 @@
-data
-build
-src/data.db
-**/*.glade~
+build/bin
+node_modules
+frontend/dist
