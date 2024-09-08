@@ -39,3 +39,7 @@ func (a *App) GetTodayTask() []database.TaskModel {
 func (a *App) GetTodayDuration() int {
 	return database.GetToDayDuration()
 }
+
+func (a *App) GetLatest(count int) []database.TaskModel {
+	return database.GetLatest(count)
+}

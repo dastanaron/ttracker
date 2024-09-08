@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 
 import './App.css';
+import { uniqueConcat } from './libraries/helpers/array';
 import { convertSecondsToHumanTime } from './libraries/timer';
 import { TaskModel } from './models/TaskModel';
-import { GetTodayDuration, GetTodayTask, Log, SaveTask } from '../wailsjs/go/main/App';
+import { GetTodayDuration, GetTodayTask, Log, SaveTask, GetLatest } from '../wailsjs/go/main/App';
 
 const DEFAULT_TASK_MODEL: TaskModel = {
   Id:        0,
   Name:      '',
-  StartTime: new Date(),
+  StartTime: '',
+  EndTime:   '',
   Duration:  0,
   Project:   '',
 };
@@ -62,9 +64,14 @@ function App() {
     }
   };
 
-
   useEffect(() => {
-    GetTodayTask().then(res => {
+    const receiveTasks = async () => {
+      const latestTasks = await GetLatest(5);
+      const todayTasks = await GetTodayTask();
+
+      return uniqueConcat(latestTasks, todayTasks); 
+    };
+    receiveTasks().then(res => {
       setTasks(res);
     }); 
     GetTodayDuration().then(res => {
@@ -101,15 +108,17 @@ function App() {
             <tr>
               <td>name</td>
               <td>duration</td>
+              <td>endTime</td>
               <td>control</td>
             </tr>
           </thead>
           <tbody>
             {
               tasks.map((task) => (
-                <tr>
+                <tr key={task.Id}>
                   <td>{task.Name}</td>
                   <td>{convertSecondsToHumanTime(task.Duration)}</td>
+                  <td>{(new Date(task.EndTime)).toLocaleString()}</td>
                   <td className='control'><button type='button' className='start-btn' onClick={async () => {
                     setTaskName(task.Name);
                     setTaskModel(task);
@@ -128,7 +137,7 @@ function App() {
               <td>
                 {convertSecondsToHumanTime(todayDuration)}
               </td>
-              <td></td>
+              <td colSpan={2}></td>
             </tr>
           </tbody>
         </table>

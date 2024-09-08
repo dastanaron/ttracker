@@ -10,6 +10,7 @@ type TaskModel struct {
 	Id        int
 	Name      string
 	StartTime time.Time
+	EndTime   time.Time
 	Duration  int
 	Project   string
 }
@@ -49,18 +50,20 @@ func GetLatest(count int) []TaskModel {
 
 	result := []TaskModel{}
 
-	rows, err := db.Query("select id, name, startTime, duration, project from tasks order by startTime desc limit ?", count)
+	rows, err := db.Query("select id, name, startTime, endTime, duration, project from tasks order by startTime desc limit ?", count)
 	e.CheckError("Error receive data from database", err)
 
 	for rows.Next() {
 		var row TaskModel
 		var startTimeUnix int
-		err = rows.Scan(&row.Id, &row.Name, &startTimeUnix, &row.Duration, &row.Project)
+		var endTimeUnix int
+		err = rows.Scan(&row.Id, &row.Name, &startTimeUnix, &endTimeUnix, &row.Duration, &row.Project)
 		if err != nil {
 			e.CheckError("Error transform data from database to TaskModel", err)
 		}
 
 		row.StartTime = time.Unix(int64(startTimeUnix), 0)
+		row.EndTime = time.Unix(int64(endTimeUnix), 0)
 
 		result = append(result, row)
 	}
@@ -77,18 +80,20 @@ func GetToDay() []TaskModel {
 
 	result := []TaskModel{}
 
-	rows, err := db.Query("select id, name, startTime, duration, project from tasks where endTime >= ?", bod.Unix())
+	rows, err := db.Query("select id, name, startTime, endTime, duration, project from tasks where endTime >= ?", bod.Unix())
 	e.CheckError("Error receive data from database", err)
 
 	for rows.Next() {
 		var row TaskModel
 		var startTimeUnix int
-		err = rows.Scan(&row.Id, &row.Name, &startTimeUnix, &row.Duration, &row.Project)
+		var endTimeUnix int
+		err = rows.Scan(&row.Id, &row.Name, &startTimeUnix, &endTimeUnix, &row.Duration, &row.Project)
 		if err != nil {
 			e.CheckError("Error transform data from database to TaskModel", err)
 		}
 
 		row.StartTime = time.Unix(int64(startTimeUnix), 0)
+		row.EndTime = time.Unix(int64(endTimeUnix), 0)
 
 		result = append(result, row)
 	}
