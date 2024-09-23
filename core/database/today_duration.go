@@ -6,7 +6,7 @@ import (
 	e "ttracker/core/errors"
 )
 
-type model struct {
+type Model struct {
 	Duration        int
 	LatestTimeStamp int64
 }
@@ -16,7 +16,7 @@ const today_duration_key = "today-duration"
 func IncrementDuration(duration int) {
 	rawData := GetServiceData(today_duration_key)
 
-	var model model
+	var model Model
 
 	if rawData.Data != "" {
 		json.Unmarshal([]byte(rawData.Data), &model)
@@ -39,7 +39,7 @@ func IncrementDuration(duration int) {
 func GetToDayDuration() int {
 	rawData := GetServiceData(today_duration_key)
 
-	var model model
+	var model Model
 
 	if rawData.Data != "" {
 		json.Unmarshal([]byte(rawData.Data), &model)

@@ -9,8 +9,8 @@ import { GetTodayDuration, GetTodayTask, Log, SaveTask, GetLatest } from '../wai
 const DEFAULT_TASK_MODEL: TaskModel = {
   Id:        0,
   Name:      '',
-  StartTime: '',
-  EndTime:   '',
+  StartTime: new Date().toISOString(),
+  EndTime:   new Date().toISOString(),
   Duration:  0,
   Project:   '',
 };
